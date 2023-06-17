@@ -4,6 +4,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using UserAPI.Brokers.Loggings;
+using UserAPI.Brokers.Storages;
+using UserAPI.Services.Users;
 
 namespace UserAPI
 {
@@ -24,6 +27,9 @@ namespace UserAPI
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "UserAPI", Version = "v1" });
             });
+
+            RegisterBrokers(services);
+            AddFoundationServices(services);
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -43,6 +49,17 @@ namespace UserAPI
 
             app.UseEndpoints(endpoints =>
                 endpoints.MapControllers());
+        }
+
+        private static void RegisterBrokers(IServiceCollection services)
+        {
+            services.AddTransient<IStorageBroker, StorageBroker>();
+            services.AddTransient<ILoggingBroker, LoggingBroker>();
+        }
+
+        private static void AddFoundationServices(IServiceCollection services)
+        {
+            services.AddTransient<IUserService, UserService>();
         }
     }
 }
